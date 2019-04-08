@@ -1,3 +1,11 @@
+from logging import getLogger, StreamHandler, DEBUG
+logger = getLogger(__name__)
+handler = StreamHandler()
+handler.setLevel(DEBUG)
+logger.setLevel(DEBUG)
+logger.addHandler(handler)
+logger.propagate = False
+
 from pprint import pprint
 
 BUF_SIZE = 2048
@@ -36,17 +44,23 @@ def main():
     list = []
     hash_dic = {}
 
+    logger.debug("getting file list.")
+
     for dir in args.targets:
         list.extend(get_filelist(dir))
+
+    logger.debug("processing...")
 
     for path in list:
         hash = get_hash(path)
         if hash in hash_dic:
-            print("DELETE " + str(path) + " => " + hash + " cause " + hash_dic[hash])
-            if args.dryrun == False:
+            msg = str(path) + " => " + hash + " cause " + hash_dic[hash]
+            if args.dryrun:
+                logger.debug("(dry-run) DELETE " + msg)
+            else:
                 import os
                 os.remove(str(path))
-                print(str(path) + " deleted.")
+                logger.debug("DELETE " + msg)
         else:
             hash_dic[hash] = str(path)
 
@@ -61,5 +75,7 @@ if __name__ == "__main__":
                         help='削除を実行せずに、メッセージのみ表示します。')
 
     args = parser.parse_args()
+
+    logger.debug(args)
 
     main()
