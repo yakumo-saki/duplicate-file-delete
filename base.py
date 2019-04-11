@@ -10,11 +10,14 @@ def main(args, get_hash):
     for dir in args.targets:
         list.extend(get_filelist(dir))
 
+    logger.debug("total files = " + str(len(list)))
     logger.debug("processing...")
 
+    del_count = 0
     for path in list:
         hash = get_hash(path)
         if hash in hash_dic:
+            del_count = del_count + 1
             msg = str(path) + " => " + hash + " cause " + hash_dic[hash]
             if args.dryrun:
                 logger.debug("(dry-run) DELETE " + msg)
@@ -24,6 +27,8 @@ def main(args, get_hash):
                 logger.debug("DELETE " + msg)
         else:
             hash_dic[hash] = str(path)
+            
+    logger.info("DELETE count = " + str(del_count))
 
 
 def get_filelist(dir):

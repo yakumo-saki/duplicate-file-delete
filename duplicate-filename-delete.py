@@ -10,10 +10,10 @@ def get_hash(filepath):
     from os import path
     import hashlib
     basename = path.basename(filepath)
-    logger.debug(filepath + " => " + basename)
+    # logger.debug(str(filepath) + " => " + basename)
 
     hash = hashlib.sha256()
-    hash.update(basename)
+    hash.update(basename.encode('utf-8'))
 
     return hash.hexdigest()  # hashする必要はないけれども...
 
